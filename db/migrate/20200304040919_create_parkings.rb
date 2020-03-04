@@ -5,8 +5,7 @@ class CreateParkings < ActiveRecord::Migration[6.0]
       t.datetime :start_at
       t.datetime :end_at
       t.integer :amount
-      t.user :belongs_to
-
+      t.belongs_to :user, null: false, foreign_key: true
       t.timestamps
     end
   end

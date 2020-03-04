@@ -1,4 +1,5 @@
 class Parking < ApplicationRecord
+  belongs_to :user
   validates :parking_type, presence:true 
   validates :start_at, presence:true 
   validates_inclusion_of :parking_type, in: ["guest", "short-term", "long-term"]
@@ -12,6 +13,23 @@ class Parking < ApplicationRecord
       
     if ( end_at.blank? && amount.present? )
       errors.add(:end_at, "有金额就必须有结束时间")
+    end
+  end
+
+  # 计算停了多少分钟
+  def duration
+    (end_at - start_at) / 60
+  end
+
+  # 计算停车费
+  def calculate_amount 
+    factor = (self.user.present?)? 50 : 100
+    if self.amount.blank? && self.start_at.present? && self.end_at.present?
+      if duration <= 60
+        self.amount = 200
+      else
+        self.amount = 200 + ((duration - 60).to_f / 30).ceil * factor
+      end
     end
   end
 end
